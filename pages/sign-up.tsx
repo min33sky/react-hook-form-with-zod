@@ -1,96 +1,41 @@
-import TextField from '@/components/TextField';
-import React from 'react';
-import { Input } from 'react-daisyui';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import SignUpForm, { SignupForm, SignUpFormRef } from '@/components/SignUpForm';
+import { useRouter } from 'next/router';
+import { useCallback, useRef } from 'react';
+import { SubmitHandler } from 'react-hook-form';
+import { SignUpResponse } from './api/sign-up';
 
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-const SignupSchema = z
-  .object({
-    email: z.string().min(1).email(),
-    password: z.string().min(6).max(24),
-    confirmPassword: z.string().min(6).max(24),
-  })
-  .refine(
-    (form) => {
-      return form.password === form.confirmPassword;
-    },
-    {
-      message: 'Passwords do not match',
-      path: ['confirmPassword'],
-    },
-  );
-
-type SignupForm = z.infer<typeof SignupSchema>;
-
+/**
+ * 회원 가입 페이지
+ */
 export default function SignUp() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignupForm>({
-    resolver: zodResolver(SignupSchema),
-  });
+  const signUpFormRef = useRef<SignUpFormRef>(null);
+  const router = useRouter();
 
-  const onValid: SubmitHandler<SignupForm> = ({
-    email,
-    password,
-    confirmPassword,
-  }) => {
-    console.log('email: ', email);
-    console.log('password: ', password);
-    console.log('confirmPassword: ', confirmPassword);
-  };
+  const handleSubmit: SubmitHandler<SignupForm> = useCallback(
+    async ({ email, password, confirmPassword }) => {
+      //? headers: { 'Content-Type': 'application/json' } 이거 안해주면
+      //? 서버에서 req.body가 undefined가 된다.
+      const response = await fetch('/api/sign-up', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-  return (
-    <form
-      onSubmit={handleSubmit(onValid)}
-      className="flex h-screen flex-col items-center justify-center gap-4"
-    >
-      <TextField
-        id="email"
-        label="email"
-        type="text"
-        inputProps={register('email')}
-        error={errors.email?.message}
-      />
+      const data: SignUpResponse = await response.json();
 
-      <div className="form-control w-full max-w-xs">
-        <label htmlFor="password" className="label">
-          <span className="label-text">password</span>
-        </label>
-        <Input
-          {...register('password')}
-          color="ghost"
-          id="password"
-          type={'password'}
-        />
-        {errors.password && (
-          <span className="label-text text-error">
-            {errors.password.message}
-          </span>
-        )}
-      </div>
+      if (!data.success) {
+        console.log('error: ', data.errors);
+        signUpFormRef.current?.setErrors(data.errors!);
+        return;
+      }
 
-      <div className="form-control w-full max-w-xs">
-        <label htmlFor="confirmPassword" className="label">
-          <span className="label-text">confirmPassword</span>
-        </label>
-        <Input
-          {...register('confirmPassword')}
-          color="ghost"
-          id="confirmPassword"
-          type={'password'}
-        />
-        {errors.confirmPassword && (
-          <span className="label-text text-error">
-            {errors.confirmPassword.message}
-          </span>
-        )}
-      </div>
-
-      <button>Submit</button>
-    </form>
+      router.replace('/');
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    },
+    [router],
   );
+
+  return <SignUpForm ref={signUpFormRef} onSubmit={handleSubmit} />;
 }
