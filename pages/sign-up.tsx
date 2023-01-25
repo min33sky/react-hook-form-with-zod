@@ -3,20 +3,37 @@ import React from 'react';
 import { Input } from 'react-daisyui';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-type FormData = {
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const SignupSchema = z
+  .object({
+    email: z.string().min(1).email(),
+    password: z.string().min(6).max(24),
+    confirmPassword: z.string().min(6).max(24),
+  })
+  .refine(
+    (form) => {
+      return form.password === form.confirmPassword;
+    },
+    {
+      message: 'Passwords do not match',
+      path: ['confirmPassword'],
+    },
+  );
+
+type SignupForm = z.infer<typeof SignupSchema>;
 
 export default function SignUp() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<SignupForm>({
+    resolver: zodResolver(SignupSchema),
+  });
 
-  const onValid: SubmitHandler<FormData> = ({
+  const onValid: SubmitHandler<SignupForm> = ({
     email,
     password,
     confirmPassword,
@@ -35,9 +52,7 @@ export default function SignUp() {
         id="email"
         label="email"
         type="text"
-        inputProps={register('email', {
-          required: 'Email is required',
-        })}
+        inputProps={register('email')}
         error={errors.email?.message}
       />
 
@@ -46,9 +61,7 @@ export default function SignUp() {
           <span className="label-text">password</span>
         </label>
         <Input
-          {...register('password', {
-            required: 'password is required',
-          })}
+          {...register('password')}
           color="ghost"
           id="password"
           type={'password'}
@@ -65,9 +78,7 @@ export default function SignUp() {
           <span className="label-text">confirmPassword</span>
         </label>
         <Input
-          {...register('confirmPassword', {
-            required: 'confirmPassword is required',
-          })}
+          {...register('confirmPassword')}
           color="ghost"
           id="confirmPassword"
           type={'password'}
