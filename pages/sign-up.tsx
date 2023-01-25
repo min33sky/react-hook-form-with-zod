@@ -26,12 +26,12 @@ export default function SignUp() {
       const data: SignUpResponse = await response.json();
 
       if (!data.success) {
-        console.log('error: ', data.errors);
         signUpFormRef.current?.setErrors(data.errors!);
         return;
       }
 
       router.replace('/');
+
       await new Promise((resolve) => setTimeout(resolve, 500));
     },
     [router],
