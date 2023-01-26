@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -11,7 +13,14 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      gridTemplateColumns: {
+        fluid: 'repeat(auto-fill, minmax(15rem, 1fr))',
+      },
+      fontFamily: {
+        sans: ['var(--font-poppins)', ...defaultTheme.fontFamily.sans],
+      },
+    },
   },
   plugins: [require('daisyui')],
 };
