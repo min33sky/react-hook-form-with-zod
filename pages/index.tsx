@@ -12,12 +12,12 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="grid h-screen place-content-center place-items-center gap-4">
-        <h1 className="text-2xl font-bold underline">
-          React Hook Form With Zod Demo
+      <main className="grid h-screen place-content-center place-items-center gap-8">
+        <h1 className="text-2xl font-bold">
+          React-hook-form과 Zod을 사용해보기
         </h1>
         <Link href="/sign-up">
-          <Button color="primary">Sign Up</Button>
+          <Button color="primary">가입하기</Button>
         </Link>
       </main>
     </>

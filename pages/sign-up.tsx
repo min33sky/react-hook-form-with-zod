@@ -13,8 +13,6 @@ export default function SignUp() {
 
   const handleSubmit: SubmitHandler<SignupForm> = useCallback(
     async ({ email, password, confirmPassword }) => {
-      //? headers: { 'Content-Type': 'application/json' } 이거 안해주면
-      //? 서버에서 req.body가 undefined가 된다.
       const response = await fetch('/api/sign-up', {
         method: 'POST',
         headers: {
@@ -30,7 +28,7 @@ export default function SignUp() {
         return;
       }
 
-      router.replace('/');
+      router.replace('/success');
 
       await new Promise((resolve) => setTimeout(resolve, 500));
     },

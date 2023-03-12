@@ -13,3 +13,10 @@ npm run dev
 yarn dev
 
 ```
+
+## Stack
+
+- Next.js
+- React Hook Form
+- Zod
+- Tailwind CSS

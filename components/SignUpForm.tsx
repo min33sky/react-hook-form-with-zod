@@ -46,11 +46,11 @@ const SignUpForm = React.forwardRef<SignUpFormRef, Props>(
     return (
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex h-screen flex-col items-center justify-center gap-4"
+        className="flex h-screen flex-col items-center justify-center gap-6"
       >
         <TextField
           id="email"
-          label="email"
+          label="이메일"
           type="text"
           inputProps={register('email')}
           error={errors.email?.message}
@@ -58,7 +58,7 @@ const SignUpForm = React.forwardRef<SignUpFormRef, Props>(
 
         <TextField
           id="password"
-          label="password"
+          label="패스워드"
           type="password"
           inputProps={register('password')}
           error={errors.password?.message}
@@ -66,14 +66,14 @@ const SignUpForm = React.forwardRef<SignUpFormRef, Props>(
 
         <TextField
           id="confirmPassword"
-          label="confirmPassword"
+          label="패스워드 확인"
           type="password"
           inputProps={register('confirmPassword')}
           error={errors.confirmPassword?.message}
         />
 
         <Button disabled={isSubmitting} color="primary">
-          {isSubmitting ? 'Loading...' : 'Sign Up'}
+          {isSubmitting ? '로딩중...' : '회원 가입'}
         </Button>
       </form>
     );
@@ -86,16 +86,16 @@ export default SignUpForm;
 
 const SignupSchema = z
   .object({
-    email: z.string().min(1).email(),
-    password: z.string().min(6).max(24),
-    confirmPassword: z.string().min(6).max(24),
+    email: z.string().email('이메일 형식이 아닙니다.'),
+    password: z.string().min(6, '최소 6자리').max(18, '최대 18자리'),
+    confirmPassword: z.string().min(6, '최소 6자리').max(18, '최대 18자리'),
   })
   .refine(
     (form) => {
       return form.password === form.confirmPassword;
     },
     {
-      message: 'Passwords do not match',
+      message: '패스워드가 일치하지 않습니다.',
       path: ['confirmPassword'],
     },
   );
