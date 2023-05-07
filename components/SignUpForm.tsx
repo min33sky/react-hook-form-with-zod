@@ -1,10 +1,10 @@
-import TextField from '@/components/TextField';
-import React, { useImperativeHandle } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import TextField from "@/components/TextField";
+import React, { useImperativeHandle } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from 'react-daisyui';
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "react-daisyui";
 
 interface Props {
   onSubmit: SubmitHandler<SignupForm>;
@@ -19,6 +19,7 @@ export interface SignUpFormRef {
  */
 const SignUpForm = React.forwardRef<SignUpFormRef, Props>(
   ({ onSubmit }, ref) => {
+    //? useForm을 사용하여 폼을 관리
     const {
       register,
       handleSubmit,
@@ -28,7 +29,9 @@ const SignUpForm = React.forwardRef<SignUpFormRef, Props>(
       resolver: zodResolver(SignupSchema),
     });
 
-    //? 부모 컴포넌트에서 setErrors를 호출할 수 있도록 ref를 설정
+    //? ref를 사용하면 부모 컴포넌트에서 자식 컴포넌트의 메서드를 호출할 수 있음
+    //? 자식 컴포넌트에서는 useImperativeHandle을 사용하여 부모 컴포넌트에서 호출할 메서드를 설정
+    //? ref를 사용할 때는 forwardRef를 사용하여 자식 컴포넌트를 감싸야 함
     useImperativeHandle(
       ref,
       () => {
@@ -40,7 +43,7 @@ const SignUpForm = React.forwardRef<SignUpFormRef, Props>(
           },
         };
       },
-      [setError],
+      [setError]
     );
 
     return (
@@ -52,7 +55,7 @@ const SignUpForm = React.forwardRef<SignUpFormRef, Props>(
           id="email"
           label="이메일"
           type="text"
-          inputProps={register('email')}
+          inputProps={register("email")}
           error={errors.email?.message}
         />
 
@@ -60,7 +63,7 @@ const SignUpForm = React.forwardRef<SignUpFormRef, Props>(
           id="password"
           label="패스워드"
           type="password"
-          inputProps={register('password')}
+          inputProps={register("password")}
           error={errors.password?.message}
         />
 
@@ -68,38 +71,38 @@ const SignUpForm = React.forwardRef<SignUpFormRef, Props>(
           id="confirmPassword"
           label="패스워드 확인"
           type="password"
-          inputProps={register('confirmPassword')}
+          inputProps={register("confirmPassword")}
           error={errors.confirmPassword?.message}
         />
 
         <Button disabled={isSubmitting} color="primary">
-          {isSubmitting ? '로딩중...' : '회원 가입'}
+          {isSubmitting ? "로딩중..." : "회원 가입"}
         </Button>
       </form>
     );
-  },
+  }
 );
 
-SignUpForm.displayName = 'SignUpForm';
+SignUpForm.displayName = "SignUpForm";
 
 export default SignUpForm;
 
 const SignupSchema = z
   .object({
-    email: z.string().email('이메일 형식이 아닙니다.'),
-    password: z.string().min(6, '최소 6자리').max(18, '최대 18자리'),
-    confirmPassword: z.string().min(6, '최소 6자리').max(18, '최대 18자리'),
+    email: z.string().email("이메일 형식이 아닙니다."),
+    password: z.string().min(6, "최소 6자리").max(18, "최대 18자리"),
+    confirmPassword: z.string().min(6, "최소 6자리").max(18, "최대 18자리"),
   })
   .refine(
     (form) => {
       return form.password === form.confirmPassword;
     },
     {
-      message: '패스워드가 일치하지 않습니다.',
-      path: ['confirmPassword'],
-    },
+      message: "패스워드가 일치하지 않습니다.",
+      path: ["confirmPassword"],
+    }
   );
 
 export type SignupForm = z.infer<typeof SignupSchema>;
-export type SignupFormKeys = keyof Omit<SignupForm, 'confirmPassword'>;
+export type SignupFormKeys = keyof Omit<SignupForm, "confirmPassword">;
 export type SignupFormErrors = Partial<Record<SignupFormKeys, string>>;
