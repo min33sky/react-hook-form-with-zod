@@ -18,7 +18,8 @@ module.exports = {
         fluid: 'repeat(auto-fill, minmax(15rem, 1fr))',
       },
       fontFamily: {
-        sans: ['var(--font-poppins)', ...defaultTheme.fontFamily.sans],
+        poppins: ['var(--font-poppins)'],
+        'nanum-gothic': ['var(--font-nanum-gothic)'],
       },
     },
   },
